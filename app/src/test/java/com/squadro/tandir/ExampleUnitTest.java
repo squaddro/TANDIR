@@ -1,4 +1,4 @@
-package com.example.tandir;
+package com.squadro.tandir;
 
 import org.junit.Test;
 

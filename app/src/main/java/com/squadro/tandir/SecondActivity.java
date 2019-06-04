@@ -1,4 +1,4 @@
-package com.example.tandir;
+package com.squadro.tandir;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
