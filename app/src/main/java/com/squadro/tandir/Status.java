@@ -9,6 +9,11 @@ public class Status {
     @SerializedName("message")
     private String message;
 
+    public Status(int status, String message) {
+        this.status = status;
+        this.message = message;
+    }
+
     public int getStatus() {
         return status;
     }
@@ -17,6 +22,9 @@ public class Status {
         return message;
     }
 
+    public String toString(){
+        return "Status Code : "+status+ " Message : "+message;
+    }
 
 
 }

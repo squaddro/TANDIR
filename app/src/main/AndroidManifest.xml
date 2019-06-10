@@ -16,13 +16,15 @@
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.squadro.tandir.MainActivity"/>
+                android:value="com.squadro.tandir.MainActivity">
+            </meta-data>
         </activity>
         <activity android:name=".SignInActivity" >
-        android:parentActivityName=".MainActivity">
-        <meta-data
-            android:name="android.support.PARENT_ACTIVITY"
-            android:value="com.squadro.tandir.MainActivity"/>
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.squadro.tandir.MainActivity">
+            </meta-data>
         </activity>
         <activity android:name=".MainActivity">
             <intent-filter>
