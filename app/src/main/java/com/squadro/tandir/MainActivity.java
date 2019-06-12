@@ -1,6 +1,5 @@
 package com.squadro.tandir;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
         //Toast.makeText(this,"HELLOOOO",Toast.LENGTH_LONG).show();
         if (view.getId() == R.id.button_signin) {
             startActivity(new Intent(MainActivity.this, SignInActivity.class));
-        } else if (view.getId() == R.id.button_signup) {
+        }else if (view.getId() == R.id.button_signup) {
             startActivity(new Intent(MainActivity.this, SignUpActivity.class));
         }
     }

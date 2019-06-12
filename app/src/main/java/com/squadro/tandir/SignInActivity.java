@@ -1,5 +1,6 @@
 package com.squadro.tandir;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -68,6 +69,11 @@ public class SignInActivity extends AppCompatActivity {
                 Status status = new Status(response.body().get("status").getAsInt(),
                         response.body().get("message").toString());
                 Toast.makeText(getBaseContext(),status.toString(),Toast.LENGTH_LONG).show();
+
+                if(status.getStatus() == 100){
+                    openLandingActivity();
+                }
+
             }
 
             @Override
@@ -77,5 +83,10 @@ public class SignInActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    public void openLandingActivity(){
+        Intent intent = new Intent(this, LandingActivity.class);
+        startActivity(intent);
     }
 }
