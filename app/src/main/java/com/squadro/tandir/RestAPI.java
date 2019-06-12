@@ -25,4 +25,7 @@ public interface RestAPI {
     })
     @POST("signin")
     Call<JsonObject> getSign(@Body JsonObject body);
+
+    @POST("addrecipe")
+    Call<JsonObject> addRecipe(@Body JsonObject body);
 }

@@ -12,19 +12,21 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".SignUpActivity">
+        <activity android:name=".RecipePageActivity"></activity>
+        <activity android:name=".LandingActivity" />
+        <activity
+            android:name=".SignUpActivity"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.squadro.tandir.MainActivity">
-            </meta-data>
+                android:value="com.squadro.tandir.MainActivity" />
         </activity>
-        <activity android:name=".SignInActivity" >
+        <activity
+            android:name=".SignInActivity"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.squadro.tandir.MainActivity">
-            </meta-data>
+                android:value="com.squadro.tandir.MainActivity" />
         </activity>
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -37,7 +39,6 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-
     </application>
 
 </manifest>
