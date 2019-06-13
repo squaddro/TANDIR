@@ -50,6 +50,12 @@ public class SignInActivity extends AppCompatActivity {
                 });
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+        CookieMethods.cleanCookies();
+
+    }
     public void getSign(){
 
         RetrofitCreate rc = new RetrofitCreate();

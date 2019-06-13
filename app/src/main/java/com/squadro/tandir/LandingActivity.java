@@ -26,6 +26,14 @@ public class LandingActivity extends AppCompatActivity {
                 }
             }
         });
+
+        Button signOut = (Button) findViewById(R.id.signOutButton);
+        signOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LandingActivity.this, MainActivity.class));
+            }
+        });
     }
 
 
