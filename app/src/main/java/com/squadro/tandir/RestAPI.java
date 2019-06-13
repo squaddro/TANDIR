@@ -11,6 +11,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 
 
 public interface RestAPI {
@@ -28,4 +29,16 @@ public interface RestAPI {
 
     @POST("addrecipe")
     Call<JsonObject> addRecipe(@Body JsonObject body);
+
+    @GET("user/{user_name}")
+    Call<JsonObject> getRecipeIds(@Path("user_name") String userName );
+
+    @GET("recipe/{recipe_id}")
+    Call<JsonObject> getRecipe(@Path("recipe_id") int recipeId);
+
+    @POST("deleterecipe")
+    Call<JsonObject> deleteRecipe(@Body JsonObject body);
+
+    @POST("updaterecipe")
+    Call<JsonObject> updateRecipe(@Body JsonObject body);
 }
