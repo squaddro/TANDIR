@@ -5,9 +5,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -20,7 +24,13 @@ public class RecipePageActivity extends AppCompatActivity {
     private String recipe_name;
     private String recipe_desc;
     private String user_id=null;
+    private String user_name=null;
 
+    private RestAPI rest;
+    private RetrofitCreate rc;
+    private Retrofit retrofit;
+
+    private TextView recipeIds = findViewById(R.id.textViewResult);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +42,7 @@ public class RecipePageActivity extends AppCompatActivity {
         final EditText editTextRecipeDesc = (EditText) findViewById(R.id.editTextRecipeDesc);
         editTextRecipeDesc.setHint("Enter Recipe Description...");
 
+        getRecipeIds();
 
         Button button = (Button)findViewById(R.id.RecipeAddButton);
 
@@ -48,12 +59,12 @@ public class RecipePageActivity extends AppCompatActivity {
     }
 
 
-    public void addRecipe(){
+    private void addRecipe(){
 
-        RetrofitCreate rc = new RetrofitCreate();
-        Retrofit retrofit = rc.createRetrofit();
+        rc = new RetrofitCreate();
+        retrofit = rc.createRetrofit();
 
-        RestAPI rest = retrofit.create(RestAPI.class);
+        rest = retrofit.create(RestAPI.class);
 
         JsonObject obj = new JsonObject();
         obj.addProperty("recipe_name",recipe_name);
@@ -80,6 +91,54 @@ public class RecipePageActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(),"Error!",Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+
+    private void getRecipeIds(){
+
+        rc = new RetrofitCreate();
+        retrofit = rc.createRetrofit();
+
+        rest = retrofit.create(RestAPI.class);
+
+        JsonObject obj = new JsonObject();
+        obj.addProperty("user_name",user_name);
+
+        Call<List<JsonObject>> call = rest.getRecipeIds(user_name);
+
+        call.enqueue(new Callback<List<JsonObject>>() {
+            @Override
+            public void onResponse(Call<List<JsonObject>> call, Response<List<JsonObject>> response) {
+
+                
+                List<JsonObject> resultList = response.body();
+                System.out.println(resultList.size());
+
+                for(int i=0;i<resultList.size();i++){
+
+                    JsonObject j = resultList.get(i);
+                    System.out.println(j.getAsInt());
+                }
+
+                for(JsonObject j : resultList){
+
+                    String content = "";
+                    content += "recipe_id= " + j.getAsInt();
+                    recipeIds.append(content);
+                }
+
+
+            //    Toast.makeText(getBaseContext(),status.toString(),Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(Call<List<JsonObject>> call, Throwable t) {
+
+            }
+        });
+
+
+
     }
 
 }
