@@ -18,7 +18,7 @@ import retrofit2.Retrofit;
 
 public class SignInActivity extends AppCompatActivity {
 
-    private String user_name=null;
+    public static String user_name=null;
     private String password=null;
 
     @Override
@@ -95,4 +95,6 @@ public class SignInActivity extends AppCompatActivity {
         Intent intent = new Intent(this, LandingActivity.class);
         startActivity(intent);
     }
+
+
 }

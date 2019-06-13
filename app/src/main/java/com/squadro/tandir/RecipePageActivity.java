@@ -8,7 +8,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +35,9 @@ public class RecipePageActivity extends AppCompatActivity {
     private RetrofitCreate rc;
     private Retrofit retrofit;
 
-    private TextView recipeIds = findViewById(R.id.textViewResult);
+    private TextView recipeIds = null;
 
+    private Recipe[] recipes;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,8 +47,11 @@ public class RecipePageActivity extends AppCompatActivity {
         editTextRecipeName.setHint("Enter Recipe Name...");
         final EditText editTextRecipeDesc = (EditText) findViewById(R.id.editTextRecipeDesc);
         editTextRecipeDesc.setHint("Enter Recipe Description...");
+        recipeIds = findViewById(R.id.textViewResult);
 
+        user_name = SignInActivity.user_name;
         getRecipeIds();
+
 
         Button button = (Button)findViewById(R.id.RecipeAddButton);
 
@@ -100,31 +109,24 @@ public class RecipePageActivity extends AppCompatActivity {
         retrofit = rc.createRetrofit();
 
         rest = retrofit.create(RestAPI.class);
+        
+        Call<JsonObject> call = rest.getRecipeIds(user_name);
 
-        JsonObject obj = new JsonObject();
-        obj.addProperty("user_name",user_name);
-
-        Call<List<JsonObject>> call = rest.getRecipeIds(user_name);
-
-        call.enqueue(new Callback<List<JsonObject>>() {
+        call.enqueue(new Callback<JsonObject>() {
             @Override
-            public void onResponse(Call<List<JsonObject>> call, Response<List<JsonObject>> response) {
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
 
-                
-                List<JsonObject> resultList = response.body();
-                System.out.println(resultList.size());
+                Gson gson= new Gson();
 
-                for(int i=0;i<resultList.size();i++){
+                JsonObject resultList = response.body();
+                JsonElement element = resultList.get("recipes");
+                JsonArray array = element.getAsJsonArray();
 
-                    JsonObject j = resultList.get(i);
-                    System.out.println(j.getAsInt());
-                }
+                recipes = new Recipe[array.size()];
 
-                for(JsonObject j : resultList){
-
-                    String content = "";
-                    content += "recipe_id= " + j.getAsInt();
-                    recipeIds.append(content);
+                for(int i=0;i<array.size();i++){
+                    Recipe obj = gson.fromJson(array.get(i).toString(),Recipe.class);
+                    recipes[i] = obj;
                 }
 
 
@@ -132,7 +134,7 @@ public class RecipePageActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<JsonObject>> call, Throwable t) {
+            public void onFailure(Call<JsonObject> call, Throwable t) {
 
             }
         });

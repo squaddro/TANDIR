@@ -31,7 +31,7 @@ public interface RestAPI {
     Call<JsonObject> addRecipe(@Body JsonObject body);
 
     @GET("user/{user_name}")
-    Call<List<JsonObject>> getRecipeIds(@Path("user_name") String userName );
+    Call<JsonObject> getRecipeIds(@Path("user_name") String userName );
 
     @GET("recipe/{recipe_id}")
     Call<JsonObject> getRecipe(@Path("recipe_id") int recipeId);
