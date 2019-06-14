@@ -1,12 +1,17 @@
 package com.squadro.tandir;
 
+import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.AlertDialog;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -43,16 +48,16 @@ public class RecipePageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_page);
 
-        final EditText editTextRecipeName = (EditText) findViewById(R.id.editTextRecipeName);
-        editTextRecipeName.setHint("Enter Recipe Name...");
-        final EditText editTextRecipeDesc = (EditText) findViewById(R.id.editTextRecipeDesc);
-        editTextRecipeDesc.setHint("Enter Recipe Description...");
-        recipeIds = findViewById(R.id.textViewResult);
+    //    final EditText editTextRecipeName = (EditText) findViewById(R.id.editTextRecipeName);
+    //    editTextRecipeName.setHint("Enter Recipe Name...");
+    //    final EditText editTextRecipeDesc = (EditText) findViewById(R.id.editTextRecipeDesc);
+    //    editTextRecipeDesc.setHint("Enter Recipe Description...");
+    //      recipeIds = findViewById(R.id.textViewResult);
 
         user_name = SignInActivity.user_name;
         getRecipeIds();
 
-
+/*
         Button button = (Button)findViewById(R.id.RecipeAddButton);
 
         button.setOnClickListener(
@@ -65,6 +70,7 @@ public class RecipePageActivity extends AppCompatActivity {
                         addRecipe();
                     }
                 });
+                */
     }
 
 
@@ -74,7 +80,6 @@ public class RecipePageActivity extends AppCompatActivity {
         retrofit = rc.createRetrofit();
 
         rest = retrofit.create(RestAPI.class);
-
         JsonObject obj = new JsonObject();
         obj.addProperty("recipe_name",recipe_name);
         obj.addProperty("recipe_desc",recipe_desc);
@@ -109,7 +114,7 @@ public class RecipePageActivity extends AppCompatActivity {
         retrofit = rc.createRetrofit();
 
         rest = retrofit.create(RestAPI.class);
-        
+
         Call<JsonObject> call = rest.getRecipeIds(user_name);
 
         call.enqueue(new Callback<JsonObject>() {
@@ -128,9 +133,7 @@ public class RecipePageActivity extends AppCompatActivity {
                     Recipe obj = gson.fromJson(array.get(i).toString(),Recipe.class);
                     recipes[i] = obj;
                 }
-
-
-            //    Toast.makeText(getBaseContext(),status.toString(),Toast.LENGTH_LONG).show();
+                makeList();
             }
 
             @Override
@@ -138,9 +141,33 @@ public class RecipePageActivity extends AppCompatActivity {
 
             }
         });
+    }
+    public void makeList(){
 
+        final String names[] = new String[recipes.length];
+        for(int i=0;i<recipes.length;i++){
+            names[i]=recipes[i].getRecipe_name();
+        }
 
+        ListView listView = (ListView)findViewById(R.id.listView1);
+        ArrayAdapter<String> dataAdapter=new ArrayAdapter<String>
+                (this, android.R.layout.simple_list_item_1, android.R.id.text1, names);
+        listView.setAdapter(dataAdapter);
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position,
+                                    long id) {
+
+                AlertDialog.Builder desc =
+                        new AlertDialog.Builder(RecipePageActivity.this);
+
+                desc.setMessage(recipes[position].getRecipe_desc())
+                        .setCancelable(true);
+
+                desc.create().show();
+            }
+        });
     }
 
 }
