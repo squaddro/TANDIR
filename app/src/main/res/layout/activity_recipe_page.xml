@@ -38,4 +38,10 @@
         android:layout_below="@+id/editTextRecipeDesc"
         />
 
+    <LinearLayout
+        android:id="@+id/LinearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"></LinearLayout>
+
 </RelativeLayout>
