@@ -1,6 +1,7 @@
 package com.squadro.tandir;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -40,7 +41,7 @@ public class RecipePageActivity extends AppCompatActivity {
     private RetrofitCreate rc;
     private Retrofit retrofit;
 
-    private TextView recipeIds = null;
+
 
     private Recipe[] recipes;
     @Override
@@ -48,16 +49,16 @@ public class RecipePageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_page);
 
-    //    final EditText editTextRecipeName = (EditText) findViewById(R.id.editTextRecipeName);
-    //    editTextRecipeName.setHint("Enter Recipe Name...");
-    //    final EditText editTextRecipeDesc = (EditText) findViewById(R.id.editTextRecipeDesc);
-    //    editTextRecipeDesc.setHint("Enter Recipe Description...");
-    //      recipeIds = findViewById(R.id.textViewResult);
+        final EditText editTextRecipeName = (EditText) findViewById(R.id.editTextRecipeName);
+        editTextRecipeName.setHint("Enter Recipe Name...");
+        final EditText editTextRecipeDesc = (EditText) findViewById(R.id.editTextRecipeDesc);
+        editTextRecipeDesc.setHint("Enter Recipe Description...");
+
 
         user_name = SignInActivity.user_name;
         getRecipeIds();
 
-/*
+
         Button button = (Button)findViewById(R.id.RecipeAddButton);
 
         button.setOnClickListener(
@@ -68,9 +69,11 @@ public class RecipePageActivity extends AppCompatActivity {
                         recipe_name = editTextRecipeName.getText().toString();
                         recipe_desc = editTextRecipeDesc.getText().toString();
                         addRecipe();
+                        finish();
+                        startActivity(getIntent());
                     }
                 });
-                */
+
     }
 
 
