@@ -2,6 +2,8 @@ package com.squadro.tandir;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -20,6 +22,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+
+import static com.squadro.tandir.MainActivity.context;
 
 
 public class SignUpActivity extends AppCompatActivity {
@@ -72,8 +76,11 @@ public class SignUpActivity extends AppCompatActivity {
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Status status = new Status(response.body().get("status").getAsInt(),
                         response.body().get("message").toString());
-                Toast.makeText(getBaseContext(),status.toString(),Toast.LENGTH_LONG).show();
-                startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
+                Toast.makeText(getBaseContext(),status.getMessage(),Toast.LENGTH_LONG).show();
+
+                if(status.getStatus() == 102){
+                    startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
+                }
             }
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
@@ -81,4 +88,6 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }
