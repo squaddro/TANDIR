@@ -4,10 +4,14 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -158,13 +162,44 @@ public class RecipePageActivity extends AppCompatActivity {
 
         ListView listView = (ListView)findViewById(R.id.listView1);
         ArrayAdapter<String> dataAdapter=new ArrayAdapter<String>
-                (this, android.R.layout.simple_list_item_1, android.R.id.text1, names);
+                (this, android.R.layout.simple_list_item_1, android.R.id.text1, names){
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent){
+                // Cast the list view each item as text view
+                TextView item = (TextView) super.getView(position,convertView,parent);
+
+                // Set the typeface/font for the current item
+
+
+                // Set the list view item's text color
+                item.setTextColor(Color.parseColor("#000000"));
+
+                // Set the item text style to bold
+                item.setTypeface(item.getTypeface(), Typeface.BOLD);
+
+
+                // Change the item text size
+                item.setTextSize(TypedValue.COMPLEX_UNIT_DIP,22);
+
+                ViewGroup.LayoutParams layoutparams = item.getLayoutParams();
+                layoutparams.height = 170;
+
+                item.setLayoutParams(layoutparams);
+
+
+                // return the view
+                return item;
+            }
+        };
         listView.setAdapter(dataAdapter);
+
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position,
                                     long id) {
+
 
                 AlertDialog.Builder desc =
                         new AlertDialog.Builder(RecipePageActivity.this);
@@ -187,11 +222,11 @@ public class RecipePageActivity extends AppCompatActivity {
                             }
                         });
 
-                desc.setNegativeButton("Update1",
+                desc.setNegativeButton("Update",
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                ///updateee
+                               
                                 recipe_id = recipes[position].getRecipe_id();
                                 recipe_name = recipes[position].getRecipe_name();
                                 recipe_desc = recipes[position].getRecipe_desc();
@@ -216,10 +251,12 @@ public class RecipePageActivity extends AppCompatActivity {
 
 
 
-                                inputName.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
+                                inputName.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                                        | InputType.TYPE_TEXT_VARIATION_NORMAL);
                                 layout.addView(inputName);
 
-                                inputDesc.setInputType(InputType.TYPE_CLASS_TEXT |InputType.TYPE_TEXT_VARIATION_NORMAL);
+                                inputDesc.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                                        |InputType.TYPE_TEXT_VARIATION_NORMAL);
                                 layout.addView(inputDesc);
 
                                 updateAlert.setView(layout);

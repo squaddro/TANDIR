@@ -12,7 +12,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".RecipePageActivity"></activity>
+        <activity android:name=".RecipePageActivity"
+            android:windowSoftInputMode="adjustPan"></activity>
         <activity android:name=".LandingActivity" />
         <activity
             android:name=".SignUpActivity"

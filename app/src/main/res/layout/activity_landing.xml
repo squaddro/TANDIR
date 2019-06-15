@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent"
+    android:background="@drawable/tandir3"
     tools:context="com.squadro.tandir.LandingActivity">
 
     <Button
@@ -67,6 +67,13 @@
         android:ems="10"
         android:inputType="textPersonName"
         android:text="Welcome!"
+        android:textStyle="bold|italic"
+        android:textSize="30sp"
+        android:textColor="#FFFFFF"
+        android:clickable="false"
+        android:cursorVisible="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
