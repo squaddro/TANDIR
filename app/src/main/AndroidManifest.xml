@@ -3,6 +3,9 @@
     package="com.squadro.tandir">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -12,8 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".RecipePageActivity"
-            android:windowSoftInputMode="adjustPan"></activity>
+        <activity android:name=".AddRecipeActivity"></activity>
+        <activity
+            android:name=".RecipePageActivity"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".LandingActivity" />
         <activity
             android:name=".SignUpActivity"

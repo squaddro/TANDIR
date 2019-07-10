@@ -74,11 +74,12 @@ public class RecipePageActivity extends AppCompatActivity {
                 {
                     public void onClick(View view)
                     {
-                        recipe_name = editTextRecipeName.getText().toString();
-                        recipe_desc = editTextRecipeDesc.getText().toString();
-                        addRecipe();
-                        finish();
-                        startActivity(getIntent());
+                    //    recipe_name = editTextRecipeName.getText().toString();
+                    //    recipe_desc = editTextRecipeDesc.getText().toString();
+                    //    addRecipe();
+                    //    finish();
+                    //    startActivity(getIntent());
+                        startActivity(new Intent(RecipePageActivity.this, AddRecipeActivity.class));
                     }
                 });
 
