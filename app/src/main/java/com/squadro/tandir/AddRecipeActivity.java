@@ -3,9 +3,12 @@ package com.squadro.tandir;
 import android.app.Activity;
 
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -35,6 +38,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -54,7 +58,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     private String user_id=null;
     private String user_name=null;
     private String  tag = null;
-
+    static int takeFlags=0;
     private RestAPI rest;
     private RetrofitCreate rc;
     private Retrofit retrofit;
@@ -74,7 +78,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         final EditText editTextRecipeDesc = (EditText) findViewById(R.id.descText);
         editTextRecipeDesc.setHint("Enter Recipe Description...");
         final EditText editTextTag = (EditText) findViewById(R.id.tagText);
-        editTextRecipeDesc.setHint("Enter Recipe Description...");
+        editTextTag.setHint("Enter Tag...");
 
 
         Button pickPhotos = (Button)findViewById(R.id.pickPhotos);
@@ -85,7 +89,9 @@ public class AddRecipeActivity extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                intent.setAction(Intent.ACTION_GET_CONTENT);
+                intent.setAction(Intent.ACTION_OPEN_DOCUMENT);
+
+
                 startActivityForResult(Intent.createChooser(intent,"Select Picture"), 1);
             }
         });
@@ -111,27 +117,22 @@ public class AddRecipeActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         uriList = new ArrayList<String>();
+
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == PICK_IMAGE_MULTIPLE) {
             if(resultCode == Activity.RESULT_OK) {
                 if(data.getClipData() != null) {
                     int count = data.getClipData().getItemCount(); //evaluate the count before the for loop --- otherwise, the count is evaluated every loop.
                     Uri imageUri = null;
+
                     for(int i = 0; i < count; i++) {
                         imageUri = data.getClipData().getItemAt(i).getUri();
-                        LinearLayout linearLayout = (LinearLayout)findViewById(R.id.gallery);
-                        View view = layoutInflater.inflate(R.layout.gallery_item,
-                                linearLayout, false);
 
 
-                        ImageView imageView = (ImageView)view.findViewById(R.id.imageView);
 
-                        imageView.setImageURI(imageUri);
-
-
-                        linearLayout.addView(view);
-
+                        uriList.add(imageUri.toString());
                     }
 
                 }
