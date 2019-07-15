@@ -6,6 +6,7 @@ public class Recipe {
     private String recipe_name;
     private String recipe_desc;
     private String user_name;
+    private String tag;
 
     public String getRecipe_id() {
         return recipe_id;
@@ -24,4 +25,7 @@ public class Recipe {
     public String getRecipe_desc() {
         return recipe_desc;
     }
+
+    public String getTag() { return tag; }
+
 }

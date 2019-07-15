@@ -44,6 +44,7 @@ public class RecipePageActivity extends AppCompatActivity {
     private String recipe_desc;
     private String user_id=null;
     private String user_name=null;
+    private String tag = null;
 
     private RestAPI rest;
     private RetrofitCreate rc;
@@ -57,10 +58,10 @@ public class RecipePageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_page);
 
-        final EditText editTextRecipeName = (EditText) findViewById(R.id.editTextRecipeName);
-        editTextRecipeName.setHint("Enter Recipe Name...");
-        final EditText editTextRecipeDesc = (EditText) findViewById(R.id.editTextRecipeDesc);
-        editTextRecipeDesc.setHint("Enter Recipe Description...");
+        //final EditText editTextRecipeName = (EditText) findViewById(R.id.editTextRecipeName);
+        //editTextRecipeName.setHint("Enter Recipe Name...");
+        //final EditText editTextRecipeDesc = (EditText) findViewById(R.id.editTextRecipeDesc);
+        //editTextRecipeDesc.setHint("Enter Recipe Description...");
 
 
         user_name = SignInActivity.user_name;
