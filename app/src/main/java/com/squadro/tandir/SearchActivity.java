@@ -85,29 +85,29 @@ public class SearchActivity extends AppCompatActivity {
 
         obj.addProperty("tag",tag);
 
-        Call<JsonObject> call = rest.search(obj);
+        Call<JsonArray> call = rest.search(obj);
 
-        call.enqueue(new Callback<JsonObject>() {
+        call.enqueue(new Callback<JsonArray>() {
             @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+            public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
 
                 Toast.makeText(getBaseContext(),"hll agaaa",Toast.LENGTH_LONG).show();
 
                 Gson gson = new Gson();
 
-                JsonObject resultList = response.body();
-                JsonElement element = resultList.get("recipes");
-                JsonArray array = element.getAsJsonArray();
+                JsonArray resultList = response.body();
 
-                recipes = new Recipe[array.size()];
 
-                for (int i = 0; i < array.size(); i++) {
-                    Recipe obj = gson.fromJson(array.get(i).toString(), Recipe.class);
+                recipes = new Recipe[resultList.size()];
+
+                for (int i = 0; i < resultList.size(); i++) {
+                    Recipe obj = gson.fromJson(resultList.get(i).toString(), Recipe.class);
                     recipes[i] = obj;
                 }
                 makeList();
+
             }
-            public void onFailure(Call<JsonObject> call, Throwable t) {
+            public void onFailure(Call<JsonArray> call, Throwable t) {
 
                 Toast.makeText(getBaseContext(), t.getMessage(),Toast.LENGTH_LONG).show();
             }

@@ -1,5 +1,6 @@
 package com.squadro.tandir;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.util.List;
@@ -43,5 +44,5 @@ public interface RestAPI {
     Call<JsonObject> updateRecipe(@Body JsonObject body);
 
     @POST("search")
-    Call<JsonObject> search(@Body JsonObject body);
+    Call<JsonArray> search(@Body JsonObject body);
 }
