@@ -85,44 +85,19 @@ public class RecipePageActivity extends AppCompatActivity {
                     }
                 });
 
+        Button searchButton = (Button)findViewById(R.id.searchButton);
+
+        searchButton.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    public void onClick(View view)
+                    {
+                        startActivity(new Intent(RecipePageActivity.this, SearchActivity.class));
+                    }
+                });
+
+
     }
-
-
-    private void addRecipe(){
-
-        rc = new RetrofitCreate();
-        retrofit = rc.createRetrofit();
-
-        rest = retrofit.create(RestAPI.class);
-        JsonObject obj = new JsonObject();
-        obj.addProperty("recipe_name",recipe_name);
-        obj.addProperty("recipe_desc",recipe_desc);
-        obj.addProperty("user_id",user_id);
-        obj.addProperty("recipe_id",recipe_id);
-
-        Call<JsonObject> call = rest.addRecipe(obj);
-
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Status status = new Status(response.body().get("status").getAsInt(),
-                        response.body().get("message").toString());
-
-                Toast.makeText(getBaseContext(),status.getMessage(),Toast.LENGTH_LONG).show();
-
-
-
-                //TODO
-                //if status is blabla
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Toast.makeText(getBaseContext(),"Error!",Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
 
     private void getRecipeIds(){
 

@@ -41,4 +41,7 @@ public interface RestAPI {
 
     @POST("updaterecipe")
     Call<JsonObject> updateRecipe(@Body JsonObject body);
+
+    @POST("search")
+    Call<JsonObject> search(@Body JsonObject body);
 }
