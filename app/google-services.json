@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "895618653217",
+    "firebase_url": "https://tandir-96e72.firebaseio.com",
+    "project_id": "tandir-96e72",
+    "storage_bucket": "tandir-96e72.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:895618653217:android:7bbcd0853500f215",
+        "android_client_info": {
+          "package_name": "com.squadro.tandir"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "895618653217-9gm8m3p0r607ir7ikb17gi24da9qhnut.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeOw3SIosb1EeZPSidFhOVkj9AX6UtQhM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "895618653217-9gm8m3p0r607ir7ikb17gi24da9qhnut.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

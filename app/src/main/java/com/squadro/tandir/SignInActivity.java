@@ -3,14 +3,21 @@ package com.squadro.tandir;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.JsonObject;
 
 import retrofit2.Call;
@@ -24,6 +31,7 @@ public class SignInActivity extends AppCompatActivity {
 
     public static String user_name=null;
     private String password=null;
+    private String token = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +57,7 @@ public class SignInActivity extends AppCompatActivity {
                     {
                         user_name = editTextName.getText().toString();
                         password = editTextPassword.getText().toString();
+                        setToken();
                         getSign();
                     }
                 });
@@ -58,6 +67,24 @@ public class SignInActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         CookieMethods.cleanCookies();
+
+    }
+
+    public void setToken(){
+
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            return;
+                        }
+
+                        String tok = task.getResult().getToken();
+                        token = tok;
+
+                    }
+                });
 
     }
     public void getSign(){

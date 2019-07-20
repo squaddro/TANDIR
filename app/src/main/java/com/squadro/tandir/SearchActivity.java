@@ -6,7 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.TypedValue;
@@ -118,7 +118,7 @@ public class SearchActivity extends AppCompatActivity {
 
         final String names[] = new String[recipes.length];
         for(int i=0;i<recipes.length;i++){
-            names[i]=recipes[i].getRecipe_name();
+            names[i]=recipes[i].getUser_name()+" : "+recipes[i].getRecipe_name();
         }
 
         ListView listView = (ListView)findViewById(R.id.search_listview);
@@ -170,12 +170,12 @@ public class SearchActivity extends AppCompatActivity {
                 AlertDialog.Builder desc =
                         new AlertDialog.Builder(SearchActivity.this);
 
-                desc.setPositiveButton("Show Username", new DialogInterface.OnClickListener() {
+                desc.setPositiveButton("Like", new DialogInterface.OnClickListener() {
 
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 recipeNumber = position;
-                                Toast.makeText(getBaseContext(),"Username = " + recipes[position].getUser_name(),Toast.LENGTH_LONG).show();
+                                String pushNotificationToUser = recipes[recipeNumber].getUser_name();
                             }
                         }
                 );
