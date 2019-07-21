@@ -31,7 +31,8 @@ public class SignInActivity extends AppCompatActivity {
 
     public static String user_name=null;
     private String password=null;
-    private String token = null;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +58,6 @@ public class SignInActivity extends AppCompatActivity {
                     {
                         user_name = editTextName.getText().toString();
                         password = editTextPassword.getText().toString();
-                        setToken();
                         getSign();
                     }
                 });
@@ -70,7 +70,12 @@ public class SignInActivity extends AppCompatActivity {
 
     }
 
-    public void setToken(){
+
+    public void getSign(){
+
+
+
+
 
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
@@ -80,47 +85,48 @@ public class SignInActivity extends AppCompatActivity {
                             return;
                         }
 
-                        String tok = task.getResult().getToken();
-                        token = tok;
+                        RetrofitCreate rc = new RetrofitCreate();
+                        Retrofit retrofit = rc.createRetrofit();
+
+                        RestAPI rest = retrofit.create(RestAPI.class);
+                        String token = task.getResult().getToken();
+                        JsonObject obj = new JsonObject();
+                        obj.addProperty("user_name",user_name);
+                        obj.addProperty("password",password);
+                        obj.addProperty("token",token);
+
+                        Call<JsonObject> call = rest.getSign(obj);
+
+                        call.enqueue(new Callback<JsonObject>() {
+                            @Override
+                            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                                Status status = new Status(response.body().get("status").getAsInt(),
+                                        response.body().get("message").toString());
+                                Toast.makeText(getBaseContext(),status.getMessage(),Toast.LENGTH_LONG).show();
+
+                                if(status.getStatus() == 100){
+                                    openLandingActivity();
+                                }
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<JsonObject> call, Throwable t) {
+                                Toast.makeText(getBaseContext(),"Error!",Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+
 
                     }
                 });
 
-    }
-    public void getSign(){
 
-        RetrofitCreate rc = new RetrofitCreate();
-        Retrofit retrofit = rc.createRetrofit();
 
-        RestAPI rest = retrofit.create(RestAPI.class);
-
-        JsonObject obj = new JsonObject();
-        obj.addProperty("user_name",user_name);
-        obj.addProperty("password",password);
-
-        Call<JsonObject> call = rest.getSign(obj);
-
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Status status = new Status(response.body().get("status").getAsInt(),
-                        response.body().get("message").toString());
-                Toast.makeText(getBaseContext(),status.getMessage(),Toast.LENGTH_LONG).show();
-
-                if(status.getStatus() == 100){
-                    openLandingActivity();
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Toast.makeText(getBaseContext(),"Error!",Toast.LENGTH_LONG).show();
-            }
-        });
 
 
     }
+
 
     public void openLandingActivity(){
         Intent intent = new Intent(this, LandingActivity.class);
