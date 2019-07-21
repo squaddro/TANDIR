@@ -175,7 +175,31 @@ public class SearchActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 recipeNumber = position;
-                                String pushNotificationToUser = recipes[recipeNumber].getUser_name();
+                                String recipe_id = recipes[recipeNumber].getRecipe_id();
+                                rc = new RetrofitCreate();
+                                retrofit = rc.createRetrofit();
+
+                                rest = retrofit.create(RestAPI.class);
+
+                                JsonObject obj = new JsonObject();
+
+                                obj.addProperty("recipe_id",recipe_id);
+
+                                Call<JsonObject> call = rest.like(obj);
+
+                                call.enqueue(new Callback<JsonObject>() {
+                                    @Override
+                                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                                        Toast.makeText(getBaseContext(),"Liked",Toast.LENGTH_LONG).show();
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<JsonObject> call, Throwable t) {
+
+                                    }
+                                });
+
+
                             }
                         }
                 );

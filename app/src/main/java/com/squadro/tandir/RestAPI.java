@@ -45,4 +45,7 @@ public interface RestAPI {
 
     @POST("search")
     Call<JsonArray> search(@Body JsonObject body);
+
+    @POST("like")
+    Call<JsonObject> like(@Body JsonObject body);
 }
