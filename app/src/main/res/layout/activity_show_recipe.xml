@@ -28,9 +28,13 @@
         <EditText
             android:id="@+id/tagText"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
+            android:layout_height="match_parent" />
 
+        <Button
+            android:id="@+id/share"
+            android:layout_width="123dp"
+            android:layout_height="wrap_content"
+            android:text="Share" />
 
 
     </LinearLayout>

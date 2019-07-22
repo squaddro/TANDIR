@@ -1,14 +1,18 @@
 package com.squadro.tandir;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ShareCompat;
+
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -43,10 +47,12 @@ public class ShowRecipeActivity extends AppCompatActivity {
     private Recipe[] recipes;
     private String srcBaseUrl = "https://tandir.herokuapp.com/image/";
     private static ArrayList<String> photoIds = AddRecipeActivity.photoIds;
+    private static ShowRecipeActivity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.activity = this;
         setContentView(R.layout.activity_show_recipe);
 
         this.getIntent().setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
@@ -55,8 +61,21 @@ public class ShowRecipeActivity extends AppCompatActivity {
         layoutInflater = LayoutInflater.from(this);
 
 
-                getRecipe();
+        getRecipe();
 
+        final Button share = (Button)findViewById(R.id.share);
+
+        share.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent shareIntent = ShareCompat.IntentBuilder.from(ShowRecipeActivity.activity)
+                        .setType("text/html")
+                        .setText("https://tandir.herokuapp.com/recipe/"+recipe_id)
+                        .getIntent();
+                startActivity(shareIntent);
+
+            }
+        });
 
     }
 
@@ -107,6 +126,7 @@ public class ShowRecipeActivity extends AppCompatActivity {
                             editTextTag.setFocusableInTouchMode(false);
                             editTextTag.clearFocus();
 
+                            recipe_id = recipes[RecipePageActivity.recipeNumber].getRecipe_id();
                             String[] uriArray = recipes[RecipePageActivity.recipeNumber].getURIs();
 
                             for (int i = 0; i < uriArray.length; i++) {
