@@ -37,7 +37,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -58,6 +60,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     private String user_id=null;
     private String user_name=null;
     private String  tag = null;
+    private String recipe_date = null;
     static int takeFlags=0;
     private RestAPI rest;
     private RetrofitCreate rc;
@@ -106,6 +109,9 @@ public class AddRecipeActivity extends AppCompatActivity {
                             recipe_name = editTextRecipeName.getText().toString();
                             recipe_desc = editTextRecipeDesc.getText().toString();
                             tag = (editTextTag.getText().toString());
+                            Date date = new Date();
+                            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                            recipe_date = formatter.format(date);
                             addRecipe();
                             finish();
                             startActivity(getIntent());
@@ -168,7 +174,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         obj.addProperty("user_id",user_id);
         obj.addProperty("recipe_id",recipe_id);
         obj.addProperty("tag",tag);
-
+        obj.addProperty("recipe_date",recipe_date);
 
         Call<JsonObject> call = rest.addRecipe(obj);
 
