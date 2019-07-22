@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -16,7 +17,9 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.provider.MediaStore;
 import android.text.InputType;
+import android.util.Base64;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,10 +40,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -65,6 +71,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     private RestAPI rest;
     private RetrofitCreate rc;
     private Retrofit retrofit;
+    protected static ArrayList<String> photoIds = null;
 
     private ArrayList<String> uriList = null;
 
@@ -85,10 +92,11 @@ public class AddRecipeActivity extends AppCompatActivity {
 
 
         Button pickPhotos = (Button)findViewById(R.id.pickPhotos);
-
+        final Button addRecipe = (Button) findViewById(R.id.addRecipe);
         pickPhotos.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                addRecipe.setEnabled(false);
                 Intent intent = new Intent();
                 intent.setType("image/*");
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
@@ -99,7 +107,7 @@ public class AddRecipeActivity extends AppCompatActivity {
             }
         });
 
-        Button addRecipe = (Button) findViewById(R.id.addRecipe);
+
 
         addRecipe.setOnClickListener(
                 new View.OnClickListener()
@@ -112,6 +120,7 @@ public class AddRecipeActivity extends AppCompatActivity {
                             Date date = new Date();
                             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
                             recipe_date = formatter.format(date);
+
                             addRecipe();
                             finish();
                             startActivity(getIntent());
@@ -122,7 +131,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data)  {
 
         uriList = new ArrayList<String>();
 
@@ -137,17 +146,69 @@ public class AddRecipeActivity extends AppCompatActivity {
                         imageUri = data.getClipData().getItemAt(i).getUri();
 
 
+                        Bitmap bitmap = null;
+                        try{
+                            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                        }catch(Exception e){
+                            e.printStackTrace();
+                        }
 
-                        uriList.add(imageUri.toString());
+
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                        byte[] byteArray = byteArrayOutputStream .toByteArray();
+                        String encoded = Base64.encodeToString(byteArray, Base64.NO_WRAP);
+                        uriList.add(encoded);
+
+
                     }
 
                 }
 
             }
         }
+        addPhotos();
     }
 
+    public void addPhotos(){
+        photoIds = new ArrayList<>();
+        rc = new RetrofitCreate();
+        retrofit = rc.createRetrofit();
+
+        rest = retrofit.create(RestAPI.class);
+
+        final AtomicInteger counter = new AtomicInteger();
+
+        for(String s : uriList){
+
+            JsonObject obj = new JsonObject();
+
+            obj.addProperty("payload",s);
+
+            Call call = rest.uploadPhoto(obj);
+
+            call.enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                    String id = response.body().get("message").getAsString();
+                    photoIds.add(id);
+                    if(counter.incrementAndGet()>= uriList.size()){
+                        Button button = (Button)findViewById(R.id.addRecipe);
+                        button.setEnabled(true);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+
+                }
+            });
+
+        }
+
+    }
     private void addRecipe(){
+
 
         rc = new RetrofitCreate();
         retrofit = rc.createRetrofit();
@@ -156,17 +217,8 @@ public class AddRecipeActivity extends AppCompatActivity {
         JsonObject obj = new JsonObject();
 
         JsonArray uriArray = new JsonArray();
-
-        for(String uri : uriList)
-            uriArray.add(uri);
-
-        if(uriList.size()==0){
-            String nullString =null;
-            obj.addProperty("uris",nullString);
-        }
-
-        else{
-            obj.add("uris", uriArray);
+        for(String s : photoIds) {
+            uriArray.add(s);
         }
 
         obj.addProperty("recipe_name",recipe_name);
@@ -174,6 +226,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         obj.addProperty("user_id",user_id);
         obj.addProperty("recipe_id",recipe_id);
         obj.addProperty("tag",tag);
+        obj.add("uris",uriArray);
         obj.addProperty("recipe_date",recipe_date);
 
         Call<JsonObject> call = rest.addRecipe(obj);
@@ -197,270 +250,8 @@ public class AddRecipeActivity extends AppCompatActivity {
                 Toast.makeText(getBaseContext(),"Error!",Toast.LENGTH_LONG).show();
             }
         });
-    }
-
-    private void getRecipeIds(){
-
-        rc = new RetrofitCreate();
-        retrofit = rc.createRetrofit();
-
-        rest = retrofit.create(RestAPI.class);
-
-        Call<JsonObject> call = rest.getRecipeIds(user_name);
-
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-
-                Gson gson= new Gson();
-
-                JsonObject resultList = response.body();
-                JsonElement element = resultList.get("recipes");
-                JsonArray array = element.getAsJsonArray();
-
-                recipes = new Recipe[array.size()];
-
-                for(int i=0;i<array.size();i++){
-                    Recipe obj = gson.fromJson(array.get(i).toString(),Recipe.class);
-                    recipes[i] = obj;
-                }
-                makeList();
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-
-            }
-        });
-    }
-    public void makeList(){
-
-        final String names[] = new String[recipes.length];
-        for(int i=0;i<recipes.length;i++){
-            names[i]=recipes[i].getRecipe_name();
-        }
-
-        ListView listView = (ListView)findViewById(R.id.listView1);
-        ArrayAdapter<String> dataAdapter=new ArrayAdapter<String>
-                (this, android.R.layout.simple_list_item_1, android.R.id.text1, names){
-
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent){
-                // Cast the list view each item as text view
-                TextView item = (TextView) super.getView(position,convertView,parent);
-
-                // Set the typeface/font for the current item
-
-
-                // Set the list view item's text color
-                item.setTextColor(Color.parseColor("#000000"));
-
-                // Set the item text style to bold
-                item.setTypeface(item.getTypeface(), Typeface.BOLD);
-
-
-                // Change the item text size
-                item.setTextSize(TypedValue.COMPLEX_UNIT_DIP,22);
-
-                ViewGroup.LayoutParams layoutparams = item.getLayoutParams();
-                layoutparams.height = 170;
-
-                item.setLayoutParams(layoutparams);
-
-
-                // return the view
-                return item;
-            }
-        };
-        listView.setAdapter(dataAdapter);
-
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position,
-                                    long id) {
-
-
-                AlertDialog.Builder desc =
-                        new AlertDialog.Builder(AddRecipeActivity.this);
-
-                desc.setMessage(recipes[position].getRecipe_desc())
-                        .setCancelable(true);
-
-                desc.setNeutralButton("Delete",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-
-                                final String recipeId = recipes[position].getRecipe_id();
-                                deleteRecipe(recipeId);
-                                finish();
-                                startActivity(getIntent());
-
-                                dialog.cancel();
-                            }
-                        });
-
-                desc.setNegativeButton("Update",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-
-                                recipe_id = recipes[position].getRecipe_id();
-                                recipe_name = recipes[position].getRecipe_name();
-                                recipe_desc = recipes[position].getRecipe_desc();
-                                tag = (recipes[position].getTag());
-
-                                AlertDialog.Builder updateAlert =
-                                        new AlertDialog.Builder(AddRecipeActivity.this);
-
-
-
-                                final EditText inputName = new EditText(AddRecipeActivity.this);
-                                final EditText inputDesc = new EditText(AddRecipeActivity.this);
-                                final EditText inputTag = new EditText(AddRecipeActivity.this);
-
-
-                                inputName.setText(recipe_name);
-                                inputDesc.setText(recipe_desc);
-                                inputTag.setText(tag);
-
-                                Context context = updateAlert.getContext();
-                                LinearLayout layout = new LinearLayout(context);
-
-                                layout.setOrientation(LinearLayout.VERTICAL);
-
-
-
-                                inputName.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_MULTI_LINE
-                                        | InputType.TYPE_TEXT_VARIATION_NORMAL);
-                                layout.addView(inputName);
-
-                                inputDesc.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_MULTI_LINE
-                                        |InputType.TYPE_TEXT_VARIATION_NORMAL);
-                                layout.addView(inputDesc);
-
-                                inputTag.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_MULTI_LINE
-                                        |InputType.TYPE_TEXT_VARIATION_NORMAL);
-                                layout.addView(inputTag);
-
-                                updateAlert.setView(layout);
-
-                                updateAlert.setPositiveButton("Update", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                        String updatedName = inputName.getText().toString();
-                                        String updatedDesc = inputDesc.getText().toString();
-                                        String updatedTag = inputTag.getText().toString();
-
-                                        if(updatedName.equals(recipe_name)){
-                                            updatedName = null;
-                                        }
-                                        if(updatedDesc.equals(recipe_desc)){
-                                            updatedDesc = null;
-                                        }
-
-                                        if(updatedTag.equals(tag)){
-                                            updatedTag = null;
-                                        }
-
-                                        updateRecipe(recipes[position].getRecipe_id(), updatedName, updatedDesc, updatedTag);
-                                        finish();
-                                        startActivity(getIntent());
-
-                                    }
-                                });
-
-                                updateAlert.create().show();
-                                //  ((Dialog)dialog).getWindow().setLayout(600,800);
-                                //dialog.cancel();
-                            }
-                        });
-                desc.create().show();
-            }
-        });
-    }
-
-    private void updateRecipe(String recipe_id, String updatedName, String updatedDesc, String updatedTag) {
-
-        rc = new RetrofitCreate();
-        retrofit = rc.createRetrofit();
-
-        rest = retrofit.create(RestAPI.class);
-        JsonObject obj = new JsonObject();
-        obj.addProperty("recipe_name",updatedName);
-        obj.addProperty("recipe_desc",updatedDesc);
-        obj.addProperty("recipe_id",recipe_id);
-        obj.addProperty("tag", updatedTag);
-
-        Call<JsonObject> call = rest.updateRecipe(obj);
-
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Status status = new Status(response.body().get("status").getAsInt(),
-                        response.body().get("message").toString());
-
-                Toast.makeText(getBaseContext(),status.getMessage(),Toast.LENGTH_LONG).show();
-
-                //TODO
-                //if status is blabla
-
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Toast.makeText(getBaseContext(),"Error!",Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-
-    private void deleteRecipe(String recipeId){
-
-        recipe_desc = null;
-        recipe_name = null;
-        user_id = null;
-        tag = null;
-
-        rc = new RetrofitCreate();
-        retrofit = rc.createRetrofit();
-
-        rest = retrofit.create(RestAPI.class);
-        JsonObject obj = new JsonObject();
-        obj.addProperty("recipe_name",recipe_name);
-        obj.addProperty("recipe_desc",recipe_desc);
-        obj.addProperty("user_id",user_id);
-        obj.addProperty("recipe_id",recipeId);
-        obj.addProperty("tag", tag);
-
-        Call<JsonObject> call = rest.deleteRecipe(obj);
-
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Status status = new Status(response.body().get("status").getAsInt(),
-                        response.body().get("message").toString());
-
-                Toast.makeText(getBaseContext(),status.getMessage(),Toast.LENGTH_LONG).show();
-
-                //TODO
-                //if status is blabla
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Toast.makeText(getBaseContext(),"Error!",Toast.LENGTH_LONG).show();
-            }
-        });
-
 
 
     }
-
-
-
 }
 
