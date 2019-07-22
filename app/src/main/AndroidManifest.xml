@@ -29,6 +29,9 @@
         <activity
             android:name=".RecipePageActivity"
             android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ProfilePageActivity"
+            android:windowSoftInputMode="adjustPan" />
         <activity android:name=".LandingActivity" />
         <activity
             android:name=".SignUpActivity"

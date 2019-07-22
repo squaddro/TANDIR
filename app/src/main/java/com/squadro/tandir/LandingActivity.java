@@ -34,6 +34,14 @@ public class LandingActivity extends AppCompatActivity {
                 startActivity(new Intent(LandingActivity.this, MainActivity.class));
             }
         });
+
+        Button myProfile = (Button) findViewById(R.id.profileButton);
+        myProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LandingActivity.this, ProfilePageActivity.class));
+            }
+        });
     }
 
 
