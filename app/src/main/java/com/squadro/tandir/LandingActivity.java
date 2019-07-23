@@ -1,7 +1,7 @@
 package com.squadro.tandir;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -32,6 +32,14 @@ public class LandingActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LandingActivity.this, MainActivity.class));
+            }
+        });
+
+        Button myProfile = (Button) findViewById(R.id.profileButton);
+        myProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LandingActivity.this, ProfilePageActivity.class));
             }
         });
     }

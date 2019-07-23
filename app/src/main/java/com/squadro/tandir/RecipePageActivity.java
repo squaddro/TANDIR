@@ -6,7 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.TypedValue;
@@ -44,7 +44,9 @@ public class RecipePageActivity extends AppCompatActivity {
     private String recipe_desc;
     private String user_id=null;
     private String user_name=null;
+    private String tag = null;
 
+    protected static int recipeNumber = -1;
     private RestAPI rest;
     private RetrofitCreate rc;
     private Retrofit retrofit;
@@ -57,10 +59,10 @@ public class RecipePageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_page);
 
-        final EditText editTextRecipeName = (EditText) findViewById(R.id.editTextRecipeName);
-        editTextRecipeName.setHint("Enter Recipe Name...");
-        final EditText editTextRecipeDesc = (EditText) findViewById(R.id.editTextRecipeDesc);
-        editTextRecipeDesc.setHint("Enter Recipe Description...");
+        //final EditText editTextRecipeName = (EditText) findViewById(R.id.editTextRecipeName);
+        //editTextRecipeName.setHint("Enter Recipe Name...");
+        //final EditText editTextRecipeDesc = (EditText) findViewById(R.id.editTextRecipeDesc);
+        //editTextRecipeDesc.setHint("Enter Recipe Description...");
 
 
         user_name = SignInActivity.user_name;
@@ -74,52 +76,28 @@ public class RecipePageActivity extends AppCompatActivity {
                 {
                     public void onClick(View view)
                     {
-                        recipe_name = editTextRecipeName.getText().toString();
-                        recipe_desc = editTextRecipeDesc.getText().toString();
-                        addRecipe();
-                        finish();
-                        startActivity(getIntent());
+                    //    recipe_name = editTextRecipeName.getText().toString();
+                    //    recipe_desc = editTextRecipeDesc.getText().toString();
+                    //    addRecipe();
+                    //    finish();
+                    //    startActivity(getIntent());
+                        startActivity(new Intent(RecipePageActivity.this, AddRecipeActivity.class));
                     }
                 });
 
+        Button searchButton = (Button)findViewById(R.id.searchButton);
+
+        searchButton.setOnClickListener(
+                new View.OnClickListener()
+                {
+                    public void onClick(View view)
+                    {
+                        startActivity(new Intent(RecipePageActivity.this, SearchActivity.class));
+                    }
+                });
+
+
     }
-
-
-    private void addRecipe(){
-
-        rc = new RetrofitCreate();
-        retrofit = rc.createRetrofit();
-
-        rest = retrofit.create(RestAPI.class);
-        JsonObject obj = new JsonObject();
-        obj.addProperty("recipe_name",recipe_name);
-        obj.addProperty("recipe_desc",recipe_desc);
-        obj.addProperty("user_id",user_id);
-        obj.addProperty("recipe_id",recipe_id);
-
-        Call<JsonObject> call = rest.addRecipe(obj);
-
-        call.enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                Status status = new Status(response.body().get("status").getAsInt(),
-                        response.body().get("message").toString());
-
-                Toast.makeText(getBaseContext(),status.getMessage(),Toast.LENGTH_LONG).show();
-
-
-
-                //TODO
-                //if status is blabla
-            }
-
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-                Toast.makeText(getBaseContext(),"Error!",Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
 
     private void getRecipeIds(){
 
@@ -169,6 +147,9 @@ public class RecipePageActivity extends AppCompatActivity {
             @Override
             public View getView(int position, View convertView, ViewGroup parent){
                 // Cast the list view each item as text view
+
+
+
                 TextView item = (TextView) super.getView(position,convertView,parent);
 
                 // Set the typeface/font for the current item
@@ -206,8 +187,18 @@ public class RecipePageActivity extends AppCompatActivity {
                 AlertDialog.Builder desc =
                         new AlertDialog.Builder(RecipePageActivity.this);
 
-                desc.setMessage(recipes[position].getRecipe_desc())
-                        .setCancelable(true);
+            //    desc.setMessage(recipes[position].getRecipe_desc())
+            //            .setCancelable(true);
+
+                desc.setPositiveButton("Show Complete Recipe", new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                recipeNumber = position;
+                                startActivity(new Intent(RecipePageActivity.this, ShowRecipeActivity.class));
+                            }
+                        }
+                );
 
                 desc.setNeutralButton("Delete",
                         new DialogInterface.OnClickListener() {
@@ -229,7 +220,7 @@ public class RecipePageActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                
-                                recipe_id = recipes[position].getRecipe_id();
+                                tag = recipes[position].getTag();
                                 recipe_name = recipes[position].getRecipe_name();
                                 recipe_desc = recipes[position].getRecipe_desc();
 
@@ -241,10 +232,12 @@ public class RecipePageActivity extends AppCompatActivity {
 
                                 final EditText inputName = new EditText(RecipePageActivity.this);
                                 final EditText inputDesc = new EditText(RecipePageActivity.this);
+                                final EditText inputTag = new EditText(RecipePageActivity.this);
 
 
                                 inputName.setText(recipe_name);
                                 inputDesc.setText(recipe_desc);
+                                inputTag.setText(tag);
 
                                 Context context = updateAlert.getContext();
                                 LinearLayout layout = new LinearLayout(context);
@@ -261,6 +254,10 @@ public class RecipePageActivity extends AppCompatActivity {
                                         |InputType.TYPE_TEXT_VARIATION_NORMAL);
                                 layout.addView(inputDesc);
 
+                                inputTag.setInputType(InputType.TYPE_CLASS_TEXT|InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                                        |InputType.TYPE_TEXT_VARIATION_NORMAL);
+                                layout.addView(inputTag);
+
                                 updateAlert.setView(layout);
 
                                 updateAlert.setPositiveButton("Update", new DialogInterface.OnClickListener() {
@@ -269,6 +266,7 @@ public class RecipePageActivity extends AppCompatActivity {
 
                                         String updatedName = inputName.getText().toString();
                                         String updatedDesc = inputDesc.getText().toString();
+                                        String updatedTag = inputTag.getText().toString();
 
                                         if(updatedName.equals(recipe_name)){
                                             updatedName = null;
@@ -277,7 +275,11 @@ public class RecipePageActivity extends AppCompatActivity {
                                             updatedDesc = null;
                                         }
 
-                                        updateRecipe(recipes[position].getRecipe_id(), updatedName, updatedDesc);
+                                        if(updatedTag.equals(tag)){
+                                            updatedTag = null;
+                                        }
+
+                                        updateRecipe(recipes[position].getRecipe_id(), updatedName, updatedDesc, updatedTag);
                                         finish();
                                         startActivity(getIntent());
 
@@ -294,7 +296,7 @@ public class RecipePageActivity extends AppCompatActivity {
         });
     }
 
-    private void updateRecipe(String recipe_id, String updatedName, String updatedDesc) {
+    private void updateRecipe(String recipe_id, String updatedName, String updatedDesc, String updatedTag) {
 
         rc = new RetrofitCreate();
         retrofit = rc.createRetrofit();
@@ -304,6 +306,7 @@ public class RecipePageActivity extends AppCompatActivity {
         obj.addProperty("recipe_name",updatedName);
         obj.addProperty("recipe_desc",updatedDesc);
         obj.addProperty("recipe_id",recipe_id);
+        obj.addProperty("tag",updatedTag);
 
         Call<JsonObject> call = rest.updateRecipe(obj);
 
@@ -352,7 +355,7 @@ public class RecipePageActivity extends AppCompatActivity {
                 Status status = new Status(response.body().get("status").getAsInt(),
                         response.body().get("message").toString());
 
-                Toast.makeText(getBaseContext(),status.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(),"Recipe is successfully deleted.",Toast.LENGTH_LONG).show();
 
                 //TODO
                 //if status is blabla
