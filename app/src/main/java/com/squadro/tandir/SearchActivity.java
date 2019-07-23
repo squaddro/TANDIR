@@ -91,7 +91,7 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<JsonArray> call, Response<JsonArray> response) {
 
-                Toast.makeText(getBaseContext(),"hll agaaa",Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(),"Search is successful",Toast.LENGTH_LONG).show();
 
                 Gson gson = new Gson();
 

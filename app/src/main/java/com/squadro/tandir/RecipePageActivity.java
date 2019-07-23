@@ -355,7 +355,7 @@ public class RecipePageActivity extends AppCompatActivity {
                 Status status = new Status(response.body().get("status").getAsInt(),
                         response.body().get("message").toString());
 
-                Toast.makeText(getBaseContext(),status.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(),"Recipe is successfully deleted.",Toast.LENGTH_LONG).show();
 
                 //TODO
                 //if status is blabla
